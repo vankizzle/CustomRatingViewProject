@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="CustomRatingViewProject.MainPage"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:local="clr-namespace:CustomRatingViewProject"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <StackLayout BackgroundColor="CornflowerBlue">
+        <!--  Place new controls here  -->
+        <local:NativeRatingView
+            x:Name="MyCustomRatingControll"
+            Margin="10"
+            HeightRequest="40"
+            RatingColor="LightCoral"
+            VerticalOptions="CenterAndExpand" />
+        <Label HorizontalOptions="CenterAndExpand" Text="Rate your experience" />
+
+        <Slider
+            x:Name="MySlider"
+            Margin="10"
+            BackgroundColor="PeachPuff"
+            BindingContext="{x:Reference MyCustomRatingControll}"
+            HorizontalOptions="FillAndExpand"
+            Maximum="{Binding GetMaxRating}"
+            Minimum="{Binding GetMinRating}"
+            Value="{Binding RateNumber, Mode=OneWayToSource}" />
+
+    </StackLayout>
+
+
+</ContentPage>
