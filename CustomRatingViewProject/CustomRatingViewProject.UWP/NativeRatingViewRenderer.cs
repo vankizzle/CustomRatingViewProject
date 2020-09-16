@@ -71,11 +71,8 @@ namespace CustomRatingViewProject.UWP
 
         private void InitializeView()
         {
-            var height = Control.Height;
-            var width = Control.Width;
-            Element.BackgroundColor = System.Drawing.Color.Black;
          
-          
+            Element.BackgroundColor = System.Drawing.Color.Black;                
         }    
     }
 }
