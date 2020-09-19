@@ -17,80 +17,64 @@ namespace CustomRatingViewProject.iOS
 {
     public class NativeRatingViewRenderer : ViewRenderer<NativeRatingView, UIView>
     {
-
+        UIView myview;
         protected override void OnElementChanged(ElementChangedEventArgs<NativeRatingView> e)
         {
             base.OnElementChanged(e);
+            if(e.NewElement != null)
+            {
+                myview = new UIView() { 
+                    BackgroundColor = Element.BackgroundColor.ToUIColor(),
+                    AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight
+                };
+                SetNativeControl(myview);
+            }
         }
-
-        public override void DrawLayer(CALayer layer, CGContext context)
+        public override void Draw(CGRect rect)
         {
-            base.DrawLayer(layer, context);
-            //set up drawing attributes
+            base.Draw(rect);
 
-          
-
-            var height = layer.Bounds.Height;
-            var width = layer.Bounds.Width;
+            var height = rect.Height;
+            var width = rect.Width;
 
             var radius = (float)((height / 2) * 0.8);
             var margin = ((width / Element.GetMaxRating) - (2 * radius)) / 2;
-            //var margin = ((width - (Element.GetMaxRating * radius)) / 5);
+
             float space = (float)margin;
             var y = height / 2;
 
-            //create geometry
-            // Draw background circle
-            CGPath pathRating = new CGPath();
-            CGPath pathUnRated = new CGPath();
-            pathRating.AddArc(radius + space, y, radius, 0, 2.0f * (float)Math.PI, true);
 
-            UIColor ratingColor = Element.RatingColor.ToUIColor();
-            ratingColor.SetStroke();
-            ratingColor.SetFill();
 
-            //to test
-            //int cnt;
-            //for(cnt = 1; cnt <= Element.RateNumber; cnt++)
-            //{
-            //    CGPath pathRating1 = new CGPath();
-            //    pathRating1.AddArc(radius + space, y, radius, 0, 2.0f * (float)Math.PI, true);
-            //    space += radius * 2 + ((float)margin * 2);
-            //    context.AddPath(pathRating);
-            //    context.DrawPath(CGPathDrawingMode.Stroke);
-            //}
-
-            //UIColor.Gray.SetStroke();
-            
-            //for (; cnt <= Element.GetMaxRating; cnt++)
-            //{
-            //    CGPath pathUnRated1 = new CGPath();
-            //    pathUnRated1.AddArc(radius + space, y, radius, 0, 2.0f * (float)Math.PI, true);
-            //    space += radius * 2 + ((float)margin * 2);
-            //    context.AddPath(pathUnRated1);
-            //    context.DrawPath(CGPathDrawingMode.Stroke);
-            //}
-
-            for (int i = 1; i <= Element.GetMaxRating; i++)
+            using (var context = UIGraphics.GetCurrentContext())
             {
-                if (i <= Element.RateNumber)
+
+
+                UIColor ratingColor = Element.RatingColor.ToUIColor();
+                ratingColor.SetStroke();
+                ratingColor.SetFill();
+
+                //to test
+                int cnt;
+                for (cnt = 1; cnt <= Element.RateNumber; cnt++)
                 {
-                    pathRating.AddArc(radius + space, y, radius, 0, 2.0f * (float)Math.PI, true);
-                }
-                else
-                {
-                    UIColor.Gray.SetStroke();
-                    pathUnRated.AddArc(radius + space, y, radius, 0, 2.0f * (float)Math.PI, true);
+                    CGPath pathRating1 = new CGPath();
+                    pathRating1.AddArc(radius + space, y, radius, 0, 2.0f * (float)Math.PI, true);
+                    space += radius * 2 + ((float)margin * 2);
+                    context.AddPath(pathRating1);
+                    context.DrawPath(CGPathDrawingMode.FillStroke);
                 }
 
-                space += radius * 2 + ((float)margin * 2);
+                UIColor.Gray.SetStroke();
+                UIColor.Gray.SetFill();
+                for (; cnt <= Element.GetMaxRating; cnt++)
+                {
+                    CGPath pathUnRated1 = new CGPath();
+                    pathUnRated1.AddArc(radius + space, y, radius, 0, 2.0f * (float)Math.PI, true);
+                    space += radius * 2 + ((float)margin * 2);
+                    context.AddPath(pathUnRated1);
+                    context.DrawPath(CGPathDrawingMode.FillStroke);
+                }
             }
-
-            context.AddPath(pathRating);
-            context.DrawPath(CGPathDrawingMode.Stroke);
-
-            context.AddPath(pathUnRated);
-            context.DrawPath(CGPathDrawingMode.Stroke);
 
         }
 
