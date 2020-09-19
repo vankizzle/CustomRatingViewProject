@@ -21,6 +21,7 @@ namespace CustomRatingViewProject.Droid
 {
     public class NativeRatingViewRenderer : ViewRenderer<NativeRatingView, Android.Views.View>
     {
+        Android.Views.View myView;
         public NativeRatingViewRenderer(Context context) : base(context)
         {
             SetWillNotDraw(false);
@@ -29,6 +30,22 @@ namespace CustomRatingViewProject.Droid
         protected override void OnElementChanged(ElementChangedEventArgs<NativeRatingView> e)
         {
             base.OnElementChanged(e);
+            if (e.OldElement != null)
+            {
+                // Unsubscribe
+               
+            }
+            if (e.NewElement != null)
+            {
+                if (Control == null)
+                {
+                    myView = new Android.Views.View(Context);
+                    SetNativeControl(myView);
+                }
+              
+                // Subscribe
+               
+            }
         }
 
         protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)

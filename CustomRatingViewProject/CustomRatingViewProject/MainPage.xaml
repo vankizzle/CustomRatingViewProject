@@ -14,7 +14,7 @@
             x:Name="MyCustomRatingControll"
             Margin="10"
             HeightRequest="40"
-            RatingColor="LightCoral"
+            RatingColor="Red"
             VerticalOptions="CenterAndExpand" />
         <Label HorizontalOptions="CenterAndExpand" Text="Rate your experience" />
 

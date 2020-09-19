@@ -24,6 +24,10 @@ namespace CustomRatingViewProject.UWP
         Compositor compositor;
         ContainerVisual root;
         List<SpriteVisual> ratings;
+        NativeRatingView myView;
+
+        CompositionMaskBrush brushSelected;
+        CompositionMaskBrush brushUnselected;
 
         public NativeRatingViewRenderer()
         {
@@ -36,11 +40,11 @@ namespace CustomRatingViewProject.UWP
             {
                 if (i < Element.RateNumber)
                 {
-                   ratings[i].Brush = compositor.CreateColorBrush(Element.RatingColor.ToWindowsColor());
+                    ratings[i].Brush = brushSelected;
                 }
                 else
                 {
-                    ratings[i].Brush = compositor.CreateColorBrush(Windows.UI.Color.FromArgb(80, 120, 117, 108));
+                    ratings[i].Brush = brushUnselected;
                 }
             }
 
@@ -70,22 +74,38 @@ namespace CustomRatingViewProject.UWP
                 }
              
                 myview.SizeChanged += OnSizeChanged;
+               // Window.Current.SizeChanged += Current_SizeChanged;
                 // Configure the control and subscribe to event handlers
             }
 
         }
 
+        private void Current_SizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
+        {
+            InitializeView(myView);
+        }
+
         private void OnSizeChanged(object sender, EventArgs e)
         {
-            var ratingView = (NativeRatingView)sender;
-            InitializeView(ratingView);
-            ratingView.SizeChanged -= OnSizeChanged;
+            myView = (NativeRatingView)sender; //initializing our view after its setup, so it's not null
+            InitializeView(myView);
+            myView.SizeChanged -= OnSizeChanged;
         }
 
 
         protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            base.OnElementPropertyChanged(sender, e);
+            base.OnElementPropertyChanged(sender, e); //we don't check the RatingNumber prop because we draw it once and
+                                                      //just change colors accordingly for this task
+
+            if (e.PropertyName == NativeRatingView.WidthProperty.PropertyName) // alternatively we can use the Window SizeChangedEvent
+            {                                                                 // to reposition our view contents
+                if(myView != null)
+                {
+                    InitializeView(myView);
+                }
+               
+            }
         }
 
         private void InitializeView(NativeRatingView view)
@@ -111,16 +131,27 @@ namespace CustomRatingViewProject.UWP
             float space = (float)margin;
             float yOffset = (((float)height - tickHeight) / 2);
 
+            brushSelected = CreateMaskBrush((int)tickWidth, (int)tickHeight, Element.RatingColor.ToWindowsColor());
+            brushUnselected = CreateMaskBrush((int)tickWidth, (int)tickHeight, Windows.UI.Color.FromArgb(80, 120, 117, 108));
+
             for (int i = 0; i < view.GetMaxRating; i++)
             {
-                tick = compositor.CreateSpriteVisual();
+                tick = compositor.CreateSpriteVisual();              
                 tick.Size = new Vector2(tickWidth, tickHeight);
-                tick.Brush = compositor.CreateColorBrush(Element.RatingColor.ToWindowsColor());
                 tick.Offset = new Vector3(space, yOffset, 0);
                 space += tickWidth + (float)margin;
                 root.Children.InsertAtTop(tick);
                 ratings.Add(tick);
             }
+        }
+
+        private CompositionMaskBrush CreateMaskBrush(int width, int height, Windows.UI.Color rateColor)
+        {
+            var _maskBrush = compositor.CreateMaskBrush();
+            LoadedImageSurface loadedSurface = LoadedImageSurface.StartLoadFromUri(new Uri("ms-appx:///Assets/CircleMask.png"), new Windows.Foundation.Size(width, height));
+            _maskBrush.Source = compositor.CreateColorBrush(rateColor);
+            _maskBrush.Mask = compositor.CreateSurfaceBrush(loadedSurface);
+            return _maskBrush;
         }
     }
 }
